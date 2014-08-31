@@ -27,21 +27,20 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 
 	/** Creates a closed {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path */
-	public LinePath (T[] waypoints) {
+	public LinePath (Array<T> waypoints) {
 		this(waypoints, false);
 	}
 
 	/** Creates a {@code LinePath} for the specified {@code waypoints}.
 	 * @param waypoints the points making up the path */
-	public LinePath (T[] waypoints, boolean isOpen) {
-		if (waypoints == null || waypoints.length == 0) throw new IllegalArgumentException();
+	public LinePath (Array<T> waypoints, boolean isOpen) {
 		this.isOpen = isOpen;
 		createPath(waypoints);
-		nearestPointOnCurrentSegment = waypoints[0].cpy();
-		nearestPointOnPath = waypoints[0].cpy();
-		tmp1 = waypoints[0].cpy();
-		tmp2 = waypoints[0].cpy();
-		tmp3 = waypoints[0].cpy();
+		nearestPointOnCurrentSegment = waypoints.first().cpy();
+		nearestPointOnPath = waypoints.first().cpy();
+		tmp1 = waypoints.first().cpy();
+		tmp2 = waypoints.first().cpy();
+		tmp3 = waypoints.first().cpy();
 	}
 
 	@Override
@@ -162,19 +161,23 @@ public class LinePath<T extends Vector<T>> implements Path<T, LinePathParam> {
 		out.set(desiredSegment.begin).sub(desiredSegment.end).scl(distance / desiredSegment.length).add(desiredSegment.end);
 	}
 
-	private void createPath (T[] waypoints) {
-		segments = new Array<Segment<T>>(waypoints.length);
+	/** Sets up this {@link Path} using the given way points.
+	 * @param waypoints The way points of this path. */
+	public void createPath (Array<T> waypoints) {
+		if (waypoints == null || waypoints.size == 0) throw new IllegalArgumentException();
+
+		segments = new Array<Segment<T>>(waypoints.size);
 		pathLength = 0;
-		T curr = waypoints[0];
+		T curr = waypoints.first();
 		T prev = null;
-		for (int i = 1; i <= waypoints.length; i++) {
+		for (int i = 1; i <= waypoints.size; i++) {
 			prev = curr;
-			if (i < waypoints.length)
-				curr = waypoints[i];
+			if (i < waypoints.size)
+				curr = waypoints.get(i);
 			else if (isOpen)
 				break; // keep the path open
 			else
-				curr = waypoints[0]; // close the path
+				curr = waypoints.first(); // close the path
 			Segment<T> segment = new Segment<T>(prev, curr);
 			pathLength += segment.length;
 			segment.cumulativeLength = pathLength;
