@@ -142,7 +142,7 @@ public class HttpRequestBuilder {
 		return request;
 	}
 
-	private void validate () {
+	protected void validate () {
 		if (httpRequest == null) {
 			throw new IllegalStateException("A new request has not been started yet. Call HttpRequestBuilder.newRequest() first.");
 		}
